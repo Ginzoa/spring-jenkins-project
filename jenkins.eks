@@ -1,0 +1,40 @@
+pipeline {
+    agent any
+    
+    tools {
+        maven 'maven'
+       
+    }
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello World'
+            }
+        }
+        
+        stage('git checkout'){
+            steps {
+                git credentialsId: 'a7ba9d1a-143c-40a3-a253-4699501d13d9', url: 'https://github.com/Ginzoa/spring-jenkins-project.git'
+            }
+        }
+        
+        stage('compile'){
+            steps{
+                sh label: '', script: 'mvn clean compile'
+            }
+        }
+
+        stage('application test unit'){
+            steps{
+                sh label: '', script: 'mvn compiler:testCompile -Dfilename=testng-unit.xml surefire:test'
+            }
+            post{
+                always{
+                    step([$class: 'Publisher'])
+                }
+            }
+        }
+
+    }
+}
